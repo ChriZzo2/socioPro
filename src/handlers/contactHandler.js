@@ -19,5 +19,5 @@ export function handleContact(bot, chatId) {
 Для записи напишите мне в личные сообщения 👆
   `;
   
-  bot.sendMessage(chatId, contactInfo);
+  bot.sendMessage(chatId, contactInfo, { parse_mode: 'HTML' });
 }
