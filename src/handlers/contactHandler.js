@@ -3,7 +3,8 @@ export function handleContact(bot, chatId) {
 📞 Как со мной связаться:
 
 📱 Telegram: @Gurov_S
-🌐 Сайт: [https://xn--b1abqakqebbpnu8b.xn--p1ai/]
+🌐 Сайт: <a href="https://xn--b1abqakqebbpnu8b.xn--p1ai/">Проверенная соционика</a>
+
 
 💬 Доступные форматы работы:
 • Личная консультация

@@ -9,19 +9,73 @@ import logger from './utils/logger.js';
 dotenv.config();
 
 const token = process.env.BOT_TOKEN;
-const bot = new TelegramBot(token, { polling: true });
+
+// Добавляем настройки для предотвращения конфликтов
+const bot = new TelegramBot(token, {
+  polling: {
+    interval: 300,
+    autoStart: true,
+    params: {
+      timeout: 10
+    }
+  }
+});
+
+// Добавляем флаг для отслеживания состояния бота
+let isShuttingDown = false;
 
 // Обработка ошибок
 bot.on('polling_error', (error) => {
+  // Игнорируем ошибки при выключении
+  if (isShuttingDown) return;
+
   logger.error('Polling error:', error);
+
+  // Перезапускаем поллинг при ошибке
+  if (error.code === 'ETELEGRAM' && error.response.statusCode === 409) {
+    logger.info('Restarting polling due to conflict...');
+    bot.stopPolling()
+        .then(() => bot.startPolling())
+        .catch(err => logger.error('Error restarting polling:', err));
+  }
 });
 
+// Graceful shutdown
+function shutdown() {
+  isShuttingDown = true;
+  logger.info('Shutting down bot...');
+
+  // Останавливаем поллинг
+  bot.stopPolling()
+      .then(() => {
+        logger.info('Bot stopped successfully');
+        process.exit(0);
+      })
+      .catch(error => {
+        logger.error('Error stopping bot:', error);
+        process.exit(1);
+      });
+
+  // Если бот не остановился через 5 секунд, принудительно завершаем процесс
+  setTimeout(() => {
+    logger.error('Forced shutdown after timeout');
+    process.exit(1);
+  }, 5000);
+}
+
+// Обработка сигналов завершения
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+
+// Обработка необработанных ошибок
 process.on('uncaughtException', (error) => {
   logger.error('Uncaught Exception:', error);
+  shutdown();
 });
 
 process.on('unhandledRejection', (error) => {
   logger.error('Unhandled Rejection:', error);
+  shutdown();
 });
 
 // Логирование запуска бота
