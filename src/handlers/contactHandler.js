@@ -2,9 +2,8 @@ export function handleContact(bot, chatId) {
   const contactInfo = `
 📞 Как со мной связаться:
 
-📱 Telegram: @[ваш_username]
-📧 Email: [ваш_email]
-🌐 Сайт: [ваш_сайт]
+📱 Telegram: @Gurov_S
+🌐 Сайт: [https://xn--b1abqakqebbpnu8b.xn--p1ai/]
 
 💬 Доступные форматы работы:
 • Личная консультация
